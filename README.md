@@ -30,7 +30,7 @@ I use [`pass`](https://www.passwordstore.org/) to manage secrets and inject them
 
 * As with Terraform, secrets are injected via `pass` by default. You can set up `pass`, or set the variables at the top of `Makefile` in plaintext.
 
-## Deploying to AWS
+## Deploying to AWS 🚀
 
 First, we need to set up the ECR repository, run `make db` (`docker build`), then `make dp` to push the image up to ECR.
 
