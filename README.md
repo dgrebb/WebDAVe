@@ -1,6 +1,6 @@
 # AWS ECS EFS WebDAV Server
 
-A `dave` Docker setup for AWS Elastic Container Service, as well as Terraform to provision infrastructure.
+A [`dave`](https://github.com/micromata/dave) Docker setup for AWS Elastic Container Service, as well as Terraform to provision infrastructure.
 
 ## Getting Started
 
