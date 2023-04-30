@@ -32,7 +32,7 @@ I use [`pass`](https://www.passwordstore.org/) to manage secrets and inject them
 
 ## Deploying to AWS 🚀
 
-First, we need to set up the ECR repository, run `make db` (`docker build`), then `make dp` to push the image up to ECR.
+First, we need to set up the ECR repository. We'll run `make tfpr` to provision the repo, then `make db` (`docker build`) to build the image, and finally `make dp` to push the image up to ECR. See the steps below.
 
 **Important**: Note that the `Makefile` uses `docker buildx build` and a target architecture of `linux/amd64`. This builds Docker images for AWS ECS on M1/M2 Macs, which default to building with the Apple silicon ARM architecture.
 
