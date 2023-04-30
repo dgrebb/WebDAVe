@@ -1,0 +1,15 @@
+address: "0.0.0.0" # the bind address - for AWS ECS leave as is
+port: "8000" # the listening port
+dir: "/home/webdav" # the provided base dir
+prefix: "/" # the url-prefix of the original url
+tls:
+  keyFile: /home/cert/clean_key.pem
+  certFile: /home/cert/cert.pem
+users:
+  #
+  # user with username 'admin', password 'foo' and access to '/admin'
+  # the full path, including the EFS mount point, will be /home/webdav/efs/admin
+  #
+  admin:
+    password: '$2a$10$yITzSSNJZAdDZs8iVBQzkuZCzZ49PyjTiPIrmBUKUpB0pwX7eySvW'
+    subdir: "/efs/admin"

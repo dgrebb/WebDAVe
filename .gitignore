@@ -1,0 +1,31 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+dt
+bin/
+dist/
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Intellij
+.idea/
+
+# SSL Certs
+*.pem
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+
+# Configurations and Environments
+
+server/config/config.yaml
+tf/scripts/set-tf-vars.sh
