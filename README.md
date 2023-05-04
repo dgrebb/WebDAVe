@@ -14,7 +14,6 @@ A [`dave`](https://github.com/micromata/dave) Docker setup for AWS Elastic Conta
 * use the `dave` cli to generate passwords for `server/config.example.yaml` running `cd server && go run cmd/davecli/main.go passwd`
   * you may need to [install `go`](https://go.dev/doc/install) first
 * adjust paths in `server/Dockerfile` to suit your needs
-* the `RUN chown -R` step is important for AWS to allow `dave` permission to create files and allow WebDAV methods
 
 ### Configure Terraform
 
@@ -32,30 +31,32 @@ I use [`pass`](https://www.passwordstore.org/) to manage secrets and inject them
 
 ## Deploying to AWS 🚀
 
-First, we need to set up the ECR repository. We'll run `make tfpr` to provision the repo, then `make db` (`docker build`) to build the image, and finally `make dp` to push the image up to ECR. See the steps below.
+First, we need to set up the ECR repository. We'll run `make tfa` and answer "yes" to the prompt. This will provision everything but the ECS Cluster, Service, and Task. We need to build and deploy the Docker image to ECR first. Follow the steps below.
 
 **Important**: Note that the `Makefile` uses `docker buildx build` and a target architecture of `linux/amd64`. This builds Docker images for AWS ECS on M1/M2 Macs, which default to building with the Apple silicon ARM architecture.
 
-### Provision the ECR Repository
+### Provision the Initial Infrastructure and ECR Repository
 
 * if you haven't already, run `make tfi` to initialize Terraform
 * run `make tfa` to provision your infrastructure
-  * **note**: the first run will yield no ECS Cluster tasks — because the ECR repository is currently empty... we'll fix that in the next section
+  * **note**: as mentioned above, the first run will yield no ECS Cluster, Service, or Tasks — because the ECR repository is currently empty... we'll fix that in the next section.
 
-### Build and push the Docker image
+### Build and Push the Docker Image
+
+First, be sure to set your `ECR_URI` variable in `Makefile` now that the AWS ECR repo is set up.
 
 * run `make db`, which will build the Docker image and name the target what is specified in the `IMAGE_NAME` variable at the top of `Makefile`
-* run `make dp`, which will login to AWS, tag the image with build time and  "`latest`", and push it to ECR
+* run `make dp`, which will login to AWS, tag the image with build time and  "`latest`", and push it to the ECR repo set via `ECR_URI` at the top of `Makefile`
 * check the [AWS Console](https://console.aws.amazon.com/ecr/repositories) to ensure your image has been pushed
   * be sure you are in the region specified in `Makefile` and `tf/scripts/set-tf-vars.sh`
 
-### Provision the Infrastructure
+### Provision the Final Infrastructure
 
 * modify `tf/modules/cluster/cluster.tf` as such:
-  * uncomment [lines 30-33](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L30)
+  * uncomment [lines 32-35](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L32)
     * this section will pull the latest image digest
-  * comment [line 39](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L39)
-  * uncomment [line 41](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L41)
+  * comment [line 41](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L41)
+  * uncomment [line 44](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L44)
     * this will attach the latest image digest to your ECS Cluster Task Definition, which will recreate the resource any time a new version of the image is found
 * run `make tfi` once more if you've changed anything since the first steps in this README
 * run `make tfp` to check what actions Terraform will be performing
