@@ -50,7 +50,7 @@ drun:
 
 dt:
 	@docker tag $(IMAGE_NAME) $(IMAGE_NAME):$(TIMESTAMP)
-	@docker tag $(IMAGE_NAME) $(IMAGE_NAME):latest
+	@docker tag $(IMAGE_NAME):latest $(ECR_URI):latest
 
 dp:
 	@cd server && \
