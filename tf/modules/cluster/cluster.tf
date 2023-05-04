@@ -10,7 +10,8 @@ resource "aws_ecs_service" "webdav_service" {
   # platform_version       = "1.4.0" - possibly remove; added for efs mount
   desired_count          = 1 # Set up the number of containers to 1
   force_new_deployment   = true
-  enable_execute_command = true
+  # enable the below line to allow for `aws ecs execute-command` if you need to debug
+  # enable_execute_command = true
 
 
   load_balancer {
@@ -26,7 +27,8 @@ resource "aws_ecs_service" "webdav_service" {
   }
 }
 
-# use this with the below image value if recreating task when new image is found
+# use this with the below comment in `aws_ecs_task_definition.webdav` 
+# to force recreating task when new image (digest) is found
 # data "aws_ecr_image" "webdav_image" {
 #   repository_name = var.SUBDOMAIN
 #   image_tag       = "latest"
@@ -36,8 +38,9 @@ resource "aws_ecs_task_definition" "webdav" {
   family = "webdav" # Name your task
   container_definitions = jsonencode([{
     name                   = "webdav",
-    image                  = "${var.server_image}" 
-    # use the below to push with image changes
+    image                  = "${var.server_image}" # comment this line...
+    # and use the following line with the above `data.aws_ecr_image` 
+    # to force-recreate the ECS task when the ECR image changes
     # image = "${var.server_image}@${data.aws_ecr_image.webdav_image.image_digest}"
     essential              = true,
     network_mode           = "awsvpc",
