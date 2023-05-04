@@ -39,17 +39,24 @@ First, we need to set up the ECR repository. We'll run `make tfpr` to provision 
 ### Provision the ECR Repository
 
 * if you haven't already, run `make tfi` to initialize Terraform
-* run `make tfpr` to provision the ECR repository
+* run `make tfa` to provision your infrastructure
+  * **note**: the first run will yield no ECS Cluster tasks — because the ECR repository is currently empty... we'll fix that in the next section
 
 ### Build and push the Docker image
 
 * run `make db`, which will build the Docker image and name the target what is specified in the `IMAGE_NAME` variable at the top of `Makefile`
-* run `make dp`, which will login to AWS, tag the image "`latest`", and push it to ECR
+* run `make dp`, which will login to AWS, tag the image with build time and  "`latest`", and push it to ECR
 * check the [AWS Console](https://console.aws.amazon.com/ecr/repositories) to ensure your image has been pushed
   * be sure you are in the region specified in `Makefile` and `tf/scripts/set-tf-vars.sh`
 
 ### Provision the Infrastructure
 
+* modify `tf/modules/cluster/cluster.tf` as such:
+  * uncomment [lines 30-33](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L30)
+    * this section will pull the latest image digest
+  * comment [line 39](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L39)
+  * uncomment [line 41](https://github.com/dgrebb/aws-ecs-efs-webdav-server/blob/main/tf/modules/cluster/cluster.tf#L41)
+    * this will attach the latest image digest to your ECS Cluster Task Definition, which will recreate the resource any time a new version of the image is found
 * run `make tfi` once more if you've changed anything since the first steps in this README
 * run `make tfp` to check what actions Terraform will be performing
 * run `make tfa`
@@ -64,6 +71,10 @@ Connectivity can be checked in macos by using Finder:
 * hit **cmd+k**
 * type `https://subdomain.example.com` and click "Connect"
 * you will be prompted for user/pass (these are what was set up in `server/config/config.yaml`)
+
+## Useful Commands
+
+The [`Makefile`](Makefile) includes useful short commands that apply the project variables you've set in the [Getting Started](#getting-started) section.
 
 ## Credits
 
