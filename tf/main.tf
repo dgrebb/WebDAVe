@@ -12,8 +12,6 @@ module "cluster" {
   REGION            = var.REGION
   security_group_id = module.security.security_group_id
   server_image      = module.image.webdav_server_image
-  # subnet_a                = module.network.subnet_a
-  # subnet_b                = module.network.subnet_b
   subnet_ids              = module.network.subnet_ids
   aws_lb_target_group_arn = module.network.aws_lb_target_group_arn
   efs_volume              = module.filesystem.efs_volume
@@ -22,8 +20,6 @@ module "cluster" {
 module "filesystem" {
   source           = "./modules/filesystem"
   DASHED_SUBDOMAIN = var.DASHED_SUBDOMAIN
-  # subnet_a                = module.network.subnet_a
-  # subnet_b                = module.network.subnet_b
   subnet_ids        = module.network.subnet_ids
   security_group_id = module.security.security_group_id
 }
