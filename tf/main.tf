@@ -1,9 +1,9 @@
 # uncomment if you'd like to store Terraform state in s3
 # also see the `tf/provider.tf` file and uncomment the backend section
-# module "state" {
-#   source           = "./modules/state"
-#   terraform_state_bucket = var.terraform_state_bucket
-# }
+module "state" {
+  source           = "./modules/state"
+  terraform_state_bucket = var.terraform_state_bucket
+}
 
 module "cluster" {
   source            = "./modules/cluster"

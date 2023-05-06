@@ -29,19 +29,19 @@ resource "aws_ecs_service" "webdav_service" {
 
 # use this with the below comment in `aws_ecs_task_definition.webdav` 
 # to force recreating task when new image (digest) is found
-# data "aws_ecr_image" "webdav_image" {
-#   repository_name = var.SUBDOMAIN
-#   image_tag       = "latest"
-# }
+data "aws_ecr_image" "webdav_image" {
+  repository_name = var.SUBDOMAIN
+  image_tag       = "latest"
+}
 
 resource "aws_ecs_task_definition" "webdav" {
   family = "webdav" # Name your task
   container_definitions = jsonencode([{
     name                   = "webdav",
-    image                  = "${var.server_image}" # comment this line...
+    # image                  = "${var.server_image}" # comment this line...
     # and use the following line with the above `data.aws_ecr_image` 
     # to force-recreate the ECS task when the ECR image changes
-    # image = "${var.server_image}@${data.aws_ecr_image.webdav_image.image_digest}"
+    image = "${var.server_image}@${data.aws_ecr_image.webdav_image.image_digest}"
     essential              = true,
     network_mode           = "awsvpc",
     readonlyRootFilesystem = false
