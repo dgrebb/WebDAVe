@@ -29,3 +29,6 @@ variable "subnets" {
         "b"
     ]
 }
+variable "terraform_state_bucket" {
+    default = "webdav-state"
+}
