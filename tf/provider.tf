@@ -10,4 +10,6 @@ terraform {
       source = "hashicorp/aws"
     }
   }
+  # uncomment if you'd like to use s3 to store Terraform state
+  # backend "s3" {}
 }

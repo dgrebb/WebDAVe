@@ -24,6 +24,7 @@ I use [`pass`](https://www.passwordstore.org/) to manage secrets and inject them
 * use whatever domain/subdomain your heart desires
   * *note*: at the time of writing, this setup requires a subdomain
 * run `make tfi` to initialize Terraform
+  * if enabling s3 backend, you'll be asked for the bucket name, key, and region - name must be `webdav-state` unless you'd like to adjust its value in `vars.tf`
 
 ### Configure `Makefile`
 
