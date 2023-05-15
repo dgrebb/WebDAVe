@@ -45,8 +45,8 @@ resource "aws_ecs_task_definition" "webdav" {
     essential              = true,
     network_mode           = "awsvpc",
     readonlyRootFilesystem = false
-    memory                 = 1024,
-    cpu                    = 512,
+    memory                 = 512,
+    cpu                    = 256,
     force_new_deployment   = true
     portMappings = [
       {
@@ -88,8 +88,8 @@ resource "aws_ecs_task_definition" "webdav" {
   }
   requires_compatibilities = ["FARGATE"] # use Fargate as the launch type
   network_mode             = "awsvpc"    # add the AWS VPN network mode as this is required for Fargate
-  memory                   = 1024        # Specify the memory the container requires
-  cpu                      = 512         # Specify the CPU the container requires
+  memory                   = 512        # Specify the memory the container requires
+  cpu                      = 256         # Specify the CPU the container requires
   execution_role_arn       = aws_iam_role.webdav_ecsTaskExecutionRole.arn
   task_role_arn            = aws_iam_role.webdav_ecsTaskExecutionRole.arn
 }
