@@ -9,7 +9,7 @@ module "cluster" {
   source                  = "./modules/cluster"
   SUBDOMAIN               = var.SUBDOMAIN
   DASHED_SUBDOMAIN        = var.DASHED_SUBDOMAIN
-  REGION                  = var.AWS_REGION
+  AWS_REGION              = var.AWS_REGION
   security_group_id       = module.security.security_group_id
   server_image            = module.image.webdav_server_image
   subnet_ids              = module.network.subnet_ids
@@ -41,7 +41,7 @@ module "network" {
   DOMAIN                          = var.DOMAIN
   SUBDOMAIN                       = var.SUBDOMAIN
   DASHED_SUBDOMAIN                = var.DASHED_SUBDOMAIN
-  REGION                          = var.AWS_REGION
+  AWS_REGION                      = var.AWS_REGION
   load_balancer_security_group_id = module.security.load_balancer_security_group_id
   subnets                         = var.subnets
 }

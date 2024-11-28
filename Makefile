@@ -1,78 +1,60 @@
 SETUP = ./tf/scripts/set-vars.sh
-TIMESTAMP = $(sh date +%y.%m.%d-%H.%M.%S)
+TIMESTAMP = $(shell date +%y.%m.%d-%H.%M.%S)
+TF_BACKEND_CONFIG = -backend-config="region=$$TF_VAR_AWS_REGION" \
+                    -backend-config="bucket=$$AWS_STATE_BUCKET" \
+                    -backend-config="key=$$AWS_STATE_KEY_PATH"
+DOCKER_PLATFORM = --platform linux/amd64
 
-.PHONY = tfi tfp tfa tfd tfre tfpr tfrc tfiu db drb drun dt dp
+.PHONY: tfi tfp tfa tfd tfre tfpr tfrc tfiu db drb drun dt dp
 
-# terraform plan
-tfp: 
-	@echo "Running Terraform plan..."
-	@. $(SETUP) && cd tf && env | grep TF_VAR && terraform plan \
-		-backend-config="region=$$TF_VAR_AWS_REGION" \
-		-backend-config="bucket=$$AWS_STATE_BUCKET" \
-		-backend-config="key=$$AWS_STATE_KEY_PATH"
+# General Terraform command template
+define tf_command
+	@echo "Running Terraform $1..."
+	@. $(SETUP) && cd tf && terraform $1 $(2)
+endef
 
-# terraform apply
+# Terraform commands
+tfp:
+	$(call tf_command,plan)
+
 tfa:
-	@$(START) && \
-	cd tf && \
-	terraform apply
+	$(call tf_command,apply)
 
-# terraform init
-tfi: 
-	@echo "Running Terraform init..."
-	@. $(SETUP) && cd tf && env | grep TF_VAR && terraform init \
-		-backend-config="region=$$TF_VAR_AWS_REGION" \
-		-backend-config="bucket=$$AWS_STATE_BUCKET" \
-		-backend-config="key=$$AWS_STATE_KEY_PATH"
+tfi:
+	$(call tf_command,init,$(TF_BACKEND_CONFIG))
 
-# terraform init reconfigure
-tfir: 
-	@echo "Running Terraform init..."
-	@. $(SETUP) && cd tf && env | grep TF_VAR && terraform init -reconfigure \
-		-backend-config="region=$$TF_VAR_AWS_REGION" \
-		-backend-config="bucket=$$AWS_STATE_BUCKET" \
-		-backend-config="key=$$AWS_STATE_KEY_PATH"
+tfir:
+	$(call tf_command,init,-reconfigure $(TF_BACKEND_CONFIG))
 
-# terraform init upgrade
 tfiu:
-	@$(START) && \
-	cd tf && \
-	terraform init -upgrade
+	$(call tf_command,init,-upgrade $(TF_BACKEND_CONFIG))
 
-# terraform refresh
 tfre:
-	@$(START) && \
-	cd tf && \
-	terraform refresh
+	$(call tf_command,refresh)
 
-# terraform destroy
 tfd:
-	@$(START) && \
-	cd tf && \
-	terraform destroy
+	$(call tf_command,destroy)
 
-# docker build
+# Docker commands
 db:
-	@cd server && \
-	docker buildx build --platform linux/amd64 -t $(IMAGE_NAME) .
+	@echo "Building Docker image..."
+	@cd server && docker buildx build $(DOCKER_PLATFORM) -t $(IMAGE_NAME) .
 
-# docker rebuild (nocache)
 drb:
-	@cd server && \
-	docker buildx build --platform linux/amd64 --no-cache -t $(IMAGE_NAME) .
+	@echo "Rebuilding Docker image with no cache..."
+	@cd server && docker buildx build $(DOCKER_PLATFORM) --no-cache -t $(IMAGE_NAME) .
 
-# docker run
 drun:
-	@cd server && \
-	docker run -p 443:8000 -t $(IMAGE_NAME) .
+	@echo "Running Docker container..."
+	@cd server && docker run -p 443:8000 -t $(IMAGE_NAME) .
 
-# docker tag
 dt:
+	@echo "Tagging Docker image..."
 	@docker tag $(IMAGE_NAME) $(IMAGE_NAME):$(TIMESTAMP)
 	@docker tag $(IMAGE_NAME):latest $(ECR_URI):latest
 
-# docker push
 dp:
+	@echo "Pushing Docker image..."
 	@cd server && \
 	aws ecr get-login-password --region $(TF_VAR_AWS_REGION) | docker login --username AWS --password-stdin $(ECR_URI)
 	@make dt

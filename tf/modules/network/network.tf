@@ -1,5 +1,6 @@
 # Provide a reference to your default VPC
 resource "aws_default_vpc" "default" {
+  assign_generated_ipv6_cidr_block = true
 }
 
 data "aws_route53_zone" "selected" {

@@ -4,7 +4,7 @@ variable "SUBDOMAIN" {
 variable "DASHED_SUBDOMAIN" {
   sensitive = true
 }
-variable "REGION" {
+variable "AWS_REGION" {
   sensitive = true
 }
 variable "security_group_id" {

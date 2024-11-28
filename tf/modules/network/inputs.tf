@@ -6,7 +6,7 @@ variable "AWS_SECRET_KEY" {
   sensitive = true
 }
 
-variable "REGION" {
+variable "AWS_REGION" {
   sensitive = true
 }
 
