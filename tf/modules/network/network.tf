@@ -24,7 +24,7 @@ resource "aws_route53_record" "webdav_domain_record" {
 resource "aws_default_subnet" "default_subnets" {
   # Use your own region here, and loop through subnets defined in tf/vars.tf
   for_each          = var.subnets
-  availability_zone = "${var.REGION}${each.value}" #"${var.REGION}a"
+  availability_zone = "${var.AWS_REGION}${each.value}" #"${var.AWS_REGION}a"
 }
 
 resource "aws_acm_certificate" "webdav_domain_cert" {

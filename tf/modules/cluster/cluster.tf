@@ -3,13 +3,13 @@ resource "aws_ecs_cluster" "webdav_cluster" {
 }
 
 resource "aws_ecs_service" "webdav_service" {
-  name                   = "webdav-service"                   # Name the service
-  cluster                = aws_ecs_cluster.webdav_cluster.id # Reference the created Cluster
-  task_definition        = aws_ecs_task_definition.webdav.arn # Reference the task that the service will spin up
-  launch_type            = "FARGATE"
+  name            = "webdav-service"                   # Name the service
+  cluster         = aws_ecs_cluster.webdav_cluster.id  # Reference the created Cluster
+  task_definition = aws_ecs_task_definition.webdav.arn # Reference the task that the service will spin up
+  launch_type     = "FARGATE"
   # platform_version       = "1.4.0" - possibly remove; added for efs mount
-  desired_count          = 1 # Set up the number of containers to 1
-  force_new_deployment   = true
+  desired_count        = 1 # Set up the number of containers to 1
+  force_new_deployment = true
   # enable the below line to allow for `aws ecs execute-command` if you need to debug
   # enable_execute_command = true
 
@@ -37,11 +37,11 @@ data "aws_ecr_image" "webdav_image" {
 resource "aws_ecs_task_definition" "webdav" {
   family = "webdav" # Name your task
   container_definitions = jsonencode([{
-    name                   = "webdav",
+    name = "webdav",
     # image                  = "${var.server_image}" # comment this line...
     # and use the following line with the above `data.aws_ecr_image` 
     # to force-recreate the ECS task when the ECR image changes
-    image = "${var.server_image}@${data.aws_ecr_image.webdav_image.image_digest}"
+    image                  = "${var.server_image}@${data.aws_ecr_image.webdav_image.image_digest}"
     essential              = true,
     network_mode           = "awsvpc",
     readonlyRootFilesystem = false
@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "webdav" {
       logDriver = "awslogs",
       options = {
         awslogs-group         = var.SUBDOMAIN,
-        awslogs-region        = var.REGION,
+        awslogs-region        = var.AWS_REGION,
         awslogs-stream-prefix = "streaming"
       }
     }
@@ -88,7 +88,7 @@ resource "aws_ecs_task_definition" "webdav" {
   }
   requires_compatibilities = ["FARGATE"] # use Fargate as the launch type
   network_mode             = "awsvpc"    # add the AWS VPN network mode as this is required for Fargate
-  memory                   = 512        # Specify the memory the container requires
+  memory                   = 512         # Specify the memory the container requires
   cpu                      = 256         # Specify the CPU the container requires
   execution_role_arn       = aws_iam_role.webdav_ecsTaskExecutionRole.arn
   task_role_arn            = aws_iam_role.webdav_ecsTaskExecutionRole.arn

@@ -1,5 +1,5 @@
 provider "aws" {
-  region     = var.REGION
+  region     = var.AWS_REGION
   access_key = var.AWS_ACCESS_KEY
   secret_key = var.AWS_SECRET_KEY
 }
@@ -10,5 +10,9 @@ terraform {
       source = "hashicorp/aws"
     }
   }
-  backend "s3" {}
+  backend "s3" {
+    region       = "placeholder"
+    state_bucket = "placeholder"
+    key          = "placeholder"
+  }
 }
